@@ -109,16 +109,29 @@ def listen_fn(conn, mask, clients):
     data_bytes = client.conn.recv(1024)
     if not data_bytes:
         logout(client, clients, proper=False)
-        return
-    if data_bytes[0] == 0x37:
+    elif data_bytes[0] == 0x37:
         start_game(client, data_bytes[1])
-    if data_bytes[0] == 0x3f:
+    elif data_bytes[0] == 0x3f:
         make_move(client, data_bytes[1])
+    elif data_bytes[0] == 0x41:
+        forfeit(client)
+    elif data_bytes[0] == 0x22:
+        # Play again.
+        init_game(client)
+    elif data_bytes[0] == 0x2a:
+        # Don't play again.
+        logout(client, clients)
+
+
+def init_game(client: Client):
+    global port
+    print("INIT NEW GAME")
+    client.conn.send(bytes([0x27, 0x34]))
 
 
 def logout(asker: Client, clients, proper=True):
     global sel
-    print("PLAYER LOGGING OUT")
+    print("PLAYER ENDING GAME AND LOGGING OUT")
     try:
         asker.conn.close()
     except:
@@ -127,14 +140,9 @@ def logout(asker: Client, clients, proper=True):
     sel.unregister(asker.conn)
 
 
-def init_game(client: Client):
-    global port
-    print("INIT GAME")
-    client.conn.send(bytes([0x27, 0x34]))
-
-
 def start_game(client: Client, game_type):
     print(f"GAME TYPE {game_type}")
+    client.game = Game()
     client.conn.send(bytes([0x1a, 0x34]))
 
 
@@ -169,6 +177,9 @@ def make_move(client: Client, move):
         return
     client.conn.send(bytes([0x1a, 0x34]))
 
+
+def forfeit(client: Client):
+    client.conn.send(bytes([0x0b, 0x18]))
 
 
 if __name__ == "__main__":

@@ -129,7 +129,7 @@ s to c: FIN
 
 ```
 c to s: 4134
-s to c: 0b18jwllj
+s to c: 0b18
 ```
 
 
