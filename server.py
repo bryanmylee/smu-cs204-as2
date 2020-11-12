@@ -90,7 +90,7 @@ def create_async_server_socket(host, port):
 
 def accept_fn(server, mask, clients):
     global sel
-    print("ACCEPTED SOMETHING")
+    print("NEW PLAYER JOINED THE SERVER")
     conn, addr = server.accept()
     conn.setblocking(False)
     host, port = addr
@@ -102,7 +102,7 @@ def accept_fn(server, mask, clients):
 
 def listen_fn(conn, mask, clients):
     global sel
-    print("LISTENED TO SOMETHING")
+    print("RECEIVED A MESSAGE")
     # Get the matching Client object for the given connection.
     client = clients[conn.fileno()]
     # Non-blocking conn should be ready for just one recv.
@@ -118,6 +118,7 @@ def listen_fn(conn, mask, clients):
 
 def logout(asker: Client, clients, proper=True):
     global sel
+    print("PLAYER LOGGING OUT")
     try:
         asker.conn.close()
     except:
@@ -138,7 +139,7 @@ def start_game(client: Client, game_type):
 
 
 def make_move(client: Client, move):
-    print(f"CLIENT MADE MOVE {move}")
+    print(f"PLAYER MADE MOVE {move}")
     valid = client.game.make_move(is_server=False, col=move)
     # Invalid move.
     if not valid:
@@ -155,6 +156,7 @@ def make_move(client: Client, move):
     while not client.game.make_move(is_server=True, col=s_move):
         s_move += 1
         s_move %= 7
+    print(f"SERVER MADE MOVE {s_move}")
     # Reply with server move.
     client.conn.send(bytes([0x55, s_move]))
     # Check if server won.
