@@ -14,7 +14,7 @@ As an extra challenge, we were tasked with building our own server implementatio
 
 To run the server, simply run:
 
-```
-python3 server.py [{server port}]
+```bash
+$ python3 server.py [{server port}]
 ```
 
